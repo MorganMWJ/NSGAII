@@ -14,8 +14,8 @@ internal class Program
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
-        var nsga2 = serviceProvider.GetService<NSGAII>();
-        nsga2?.Run();
+        var nsgaii = serviceProvider.GetService<NSGAII>();
+        nsgaii?.Run();
 
         if (serviceProvider is IDisposable disposable)
         {
