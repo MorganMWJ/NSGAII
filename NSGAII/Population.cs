@@ -87,14 +87,15 @@ public class Population
         }
 
         // create the other non-dominated fronts
-        int frontCounter = 1;
-        var fronts = new Collection<List<Solution>>();
+        int frontCounter = 0;
+        Collection<List<Solution>> fronts = [ front1 ];
 
+        var newFront = new List<Solution>();
         while (fronts[frontCounter].Count != 0)
         {
-            var newFront = new List<Solution>();
+            newFront = new List<Solution>();
 
-            foreach (var p in front1)
+            foreach (var p in fronts[frontCounter])
             {
                 foreach (var q in p.DominatedSolutions)
                 {
@@ -160,7 +161,7 @@ public class Population
     /// <summary>
     /// Output to console
     /// </summary>
-    public void Print()
+    public void Print(Dictionary<string, string>? metaData = null)
     {
         var table = new ConsoleTable("Genes", "Non-Domination Rank", 
             "Domination Count", "Crowding Distance",
@@ -174,7 +175,7 @@ public class Population
                 objFuncResult += $"{obj(solution.Genes)}, ";
             }
 
-            table.AddRow(solution.Genes, solution.NonDominationRank,
+            table.AddRow(solution.GeneStr, solution.NonDominationRank,
                 solution.DominationCount, solution.CrowdingDist,
                 objFuncResult);
 
@@ -182,6 +183,13 @@ public class Population
         }
 
         table.Write();
+
+        if (metaData != null)
+        {
+            string metaDataStr = string.Join(", ", metaData.Select(kvp => $"{kvp.Key}: {kvp.Value}"));
+            Console.WriteLine(metaDataStr);
+        }
+        
         Console.WriteLine();
     }
 }

@@ -77,7 +77,8 @@ public class NSGAII
             CurrentPopulation = nextPopulation;
             OffspringPopulation = _populationFactory.CreateOffspring(CurrentPopulation);
 
-            CurrentPopulation.Print();
+            var metaData = new Dictionary<string, string> { { "Iteration", $"{i}" } };
+            CurrentPopulation.Print(metaData);
         }
     }
 }

@@ -63,6 +63,8 @@ public class Solution
     /// </summary>
     public double CrowdingDist { get; set; } = 0;
 
+    public object GeneStr => string.Join(", ", Genes);
+
     public Solution(double[] genes)
     {
         Genes = genes;
@@ -83,7 +85,7 @@ public class Solution
                 double mutation = Genes[i] + StaticHelpers.GaussianRandom(0, stdDev);
 
                 // Clamp mutation to within min and max values
-                Genes[i] = Math.Max(Min, Math.Min(Max, mutation));
+                Genes[i] = mutation.Clamp(Min, Max);
             }
         }
     }

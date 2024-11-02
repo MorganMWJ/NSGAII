@@ -1,4 +1,5 @@
-﻿using NSGAII.Helpers;
+﻿using NSGAII.Extensions;
+using NSGAII.Helpers;
 using NSGAII.TestObjectiveFunctions;
 
 namespace NSGAII.Factories;
@@ -32,7 +33,6 @@ public class SolutionFactory : ISolutionFactory
     /// Using BLX-α crossover algorithm
     /// create child from two parents.
     /// </summary>
-    /// <returns></returns>
     public Solution CreateChildUsingCrossover(Solution parent1, Solution parent2, double alpha = 0.3)
     {
         Random random = new Random();
@@ -51,9 +51,9 @@ public class SolutionFactory : ISolutionFactory
 
             // Generate a random value within the extended range for the offspring gene
             offspring[i] = random.NextDouble() * (upperBound - lowerBound) + lowerBound;
-
-            if (offspring[i] < _testProblem.LowerBound || offspring[i] > _testProblem.UpperBound)
-                throw new InvalidOperationException("Error: offspring outside constrained range.");
+            
+            // Clamp the child value to ensure it's within the [minVal, maxVal] bounds
+            offspring[i] = offspring[i].Clamp(_testProblem.LowerBound, _testProblem.UpperBound);
         }
 
         var result = new Solution(offspring);
