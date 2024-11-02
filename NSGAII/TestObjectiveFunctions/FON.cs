@@ -23,13 +23,13 @@ public class FON : ITestProblem
 {
     public const double MinValue = -4.0;
     public const double MaxValue = 4.0;
-    public const int ParamCount = 3;
+    public const int ParameterCount = 3;
 
     public double LowerBound => MinValue;
 
     public double UpperBound => MaxValue;
 
-    public int N => ParamCount;
+    public int ParamCount => ParameterCount;
 
     public List<ObjectiveFunction> ObjectiveFunctions => new List<ObjectiveFunction> { F1, F2 };
 

@@ -1,59 +1,22 @@
-﻿using NSGAII.Extensions;
+﻿using NSGAII.Delegates;
+using NSGAII.Extensions;
+using NSGAII.Helpers;
 using System.Collections.ObjectModel;
 using System.Drawing;
 
 namespace NSGAII;
-public class Generation
+public class Population
 {
-    public List<Individual> Population {  get; set; }
+    public FixedSizeList<Solution> Members {  get; set; }
 
-    public int Size { get; set; }
+    public bool IsFull => Members.IsFull;
 
     /// <summary>
     /// Create empty generation
     /// </summary>
-    private Generation(int size)
+    public Population(int size)
     {
-        Population = new List<Individual>(size);
-        Size = size;
-    }
-
-    /// <summary>
-    /// Used to set up the first generation with random values.
-    /// </summary>
-    public static Generation CreateRandom(int size, int geneSize)
-    {
-        var result = new Generation(size);
-        for(int i = 0; i < size; i++)
-        {
-            result.Population.Add(new Individual(geneSize));
-        }
-
-        return result;
-    }
-
-    /// <summary>
-    /// Create combined population of 2 * Size.
-    /// As part of temporary step in main loop.
-    /// </summary>
-    public static Generation CreateCombined(Generation g1, Generation g2)
-    {
-        var result = new Generation(g1.Size*2);
-        result.Population.AddRange(g1.Population);
-        result.Population.AddRange(g2.Population);
-        return result;
-    }
-
-    public void Add(Individual member) 
-    {
-        if(Population.Count < Size)
-        {
-            Population.Add(member);
-        }
-        else
-        {
-            throw new InvalidOperationException("Population full");
-        }
+        Members = new FixedSizeList<Solution>(size);
     }
 
 
@@ -61,10 +24,10 @@ public class Generation
     /// Fitness calculated from Non-dominated rank and crowding distance.
     /// </summary>
     /// <returns></returns>
-    public Individual BinaryTournamentSelection()
+    public Solution BinaryTournamentSelection()
     {
-        var i1 = Population.Rand();
-        var i2 = Population.Rand();
+        var i1 = Members.Rand();
+        var i2 = Members.Rand();
         
         if(i1.NonDominationRank < i2.NonDominationRank)
         {
@@ -81,33 +44,6 @@ public class Generation
     }
 
     /// <summary>
-    /// Create the next generation of the same size by
-    /// selection, crossover, and mutation.
-    /// </summary>
-    /// <returns>New Population Q</returns>
-    public Generation CreateNextGeneration()
-    {
-        var result = new Generation(Size);
-
-        for(int x=0; x<Size; x++)
-        {
-            //selection
-            var i1 = BinaryTournamentSelection();
-            var i2 = BinaryTournamentSelection();
-
-            // crossover
-            var child = Individual.Crossover(i1, i2);
-
-            // muation
-            child.Mutate();
-
-            result.Population.Add(child);
-        }
-
-        return result;
-    }
-
-    /// <summary>
     /// Calculate the non-dominated fronts
     /// 
     /// For each solution (population member) we calculate 2 entities:
@@ -120,16 +56,16 @@ public class Generation
     /// We go to each member (p) of the first non-dominated front and we iterate through each of their dominated solutions(Sp) reducing each of the dominated solutions(q) domination count by one.If the domination count becomes 0 then we put it in a separate list Q. This list forms the second non-dominated front.
     /// The above procedure is repeated until the third front is identified and then until all fronts are identified
     /// </summary>
-    public Collection<List<Individual>> NonDominationSort()
+    public Collection<List<Solution>> NonDominationSort()
     {
         // Create the first non-dominated front
-        var front1 = new List<Individual>();
-        foreach (var p in Population)
+        var front1 = new List<Solution>();
+        foreach (var p in Members)
         {
-            p.DominatedSolutions = new List<Individual>();
+            p.DominatedSolutions = new List<Solution>();
             p.DominationCount = 0;
 
-            foreach (var q in Population)
+            foreach (var q in Members)
             {
                 if (p.Dominates(q))
                 {
@@ -152,11 +88,11 @@ public class Generation
 
         // create the other non-dominated fronts
         int frontCounter = 1;
-        var fronts = new Collection<List<Individual>>();
+        var fronts = new Collection<List<Solution>>();
 
         while (fronts[frontCounter].Count != 0)
         {
-            var newFront = new List<Individual>();
+            var newFront = new List<Solution>();
 
             foreach (var p in front1)
             {
@@ -195,9 +131,9 @@ public class Generation
     /// Each objective function is normalized before calculating the crowding distance.
     /// </summary>
     /// <param name="nonDominatedFront"></param>
-    public void CrowdingDistanceAssignment(List<Individual> nonDominatedFront)
+    public static void CrowdingDistanceAssignment(List<Solution> nonDominatedFront)
     {
-        foreach(var objFunc in NSGAII.ObjectiveFunctions)
+        foreach(var objFunc in Solution.ObjectiveFunctions)
         {
             var sortedFront = nonDominatedFront.OrderBy(x => objFunc(x.Genes)).ToList();
 

@@ -19,7 +19,7 @@ public interface ITestProblem
     /// Parameter count. 
     /// Length of double array passed to F1, F2.
     /// </summary>
-    public int N { get; }
+    public int ParamCount { get; }
 
     /// <summary>
     /// List of function pointers (delegates)
