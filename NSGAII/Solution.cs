@@ -61,7 +61,7 @@ public class Solution
     /// Space of permiter to nearest 2 neighbours.
     /// Greater crowding distance means more diverse/different solution.
     /// </summary>
-    public double CrowdingDist { get; internal set; } = 0;
+    public double CrowdingDist { get; set; } = 0;
 
     public Solution(double[] genes)
     {

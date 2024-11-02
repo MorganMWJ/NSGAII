@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using NSGAII.Factories;
 using NSGAII.TestObjectiveFunctions;
 
 namespace NSGAII;
@@ -13,8 +14,8 @@ internal class Program
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
-        var greetingService = serviceProvider.GetService<NSGAII>();
-        greetingService?.Run();
+        var nsga2 = serviceProvider.GetService<NSGAII>();
+        nsga2?.Run();
 
         if (serviceProvider is IDisposable disposable)
         {
@@ -31,6 +32,8 @@ internal class Program
         services.AddScoped<Population>();
         services.AddScoped<Solution>();
 
+        services.AddScoped<ISolutionFactory, SolutionFactory>();
+        services.AddScoped<IPopulationFactory, PopulationFactory>();
         services.AddScoped<ITestProblem, FON>();
     }
 }

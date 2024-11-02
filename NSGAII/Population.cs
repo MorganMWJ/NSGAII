@@ -1,4 +1,4 @@
-﻿using NSGAII.Delegates;
+﻿using ConsoleTables;
 using NSGAII.Extensions;
 using NSGAII.Helpers;
 using System.Collections.ObjectModel;
@@ -155,5 +155,33 @@ public class Population
                 sortedFront[i].CrowdingDist += distance;
             }
         }
+    }
+
+    /// <summary>
+    /// Output to console
+    /// </summary>
+    public void Print()
+    {
+        var table = new ConsoleTable("Genes", "Non-Domination Rank", 
+            "Domination Count", "Crowding Distance",
+            "Objective Function Result (f1, f2)");
+
+        foreach(var solution in Members)
+        {
+            string objFuncResult = string.Empty;
+            foreach (var obj in Solution.ObjectiveFunctions)
+            {
+                objFuncResult += $"{obj(solution.Genes)}, ";
+            }
+
+            table.AddRow(solution.Genes, solution.NonDominationRank,
+                solution.DominationCount, solution.CrowdingDist,
+                objFuncResult);
+
+            objFuncResult = string.Empty;
+        }
+
+        table.Write();
+        Console.WriteLine();
     }
 }

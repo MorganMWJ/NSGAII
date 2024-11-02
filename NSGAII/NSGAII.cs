@@ -1,7 +1,5 @@
-﻿using NSGAII.Delegates;
+﻿using ConsoleTables;
 using NSGAII.Factories;
-using NSGAII.TestObjectiveFunctions;
-using System.Linq;
 
 namespace NSGAII;
 public class NSGAII
@@ -38,6 +36,8 @@ public class NSGAII
         // init P and Q
         CurrentPopulation = _populationFactory.CreateRandom();
         OffspringPopulation = _populationFactory.CreateOffspring(CurrentPopulation);
+
+        CurrentPopulation.Print();
 
         for (int i = 0; i < _options.Iterations; i++)
         {
@@ -76,6 +76,8 @@ public class NSGAII
             // make new current & offspring population
             CurrentPopulation = nextPopulation;
             OffspringPopulation = _populationFactory.CreateOffspring(CurrentPopulation);
+
+            CurrentPopulation.Print();
         }
     }
 }
